@@ -1,11 +1,13 @@
 import {
-  Controller,
-  Get,
-  Param,
-  Post,
   Body,
+  Controller,
+  Delete,
+  Get,
   HttpCode,
-  HttpStatus
+  HttpStatus,
+  Param,
+  Patch,
+  Post
 } from "@nestjs/common";
 
 @Controller("coffees")
@@ -27,5 +29,15 @@ export class CoffeesController {
     // return "Coffee created";
     return body;
     // return name;
+  }
+
+  @Patch(":id")
+  update(@Param("id") id: string, @Body() body: { name: string }) {
+    return `Coffee #${id} updated, ${JSON.stringify(body)}`;
+  }
+
+  @Delete(":id")
+  remove(@Param("id") id: string) {
+    return `Coffee #${id} deleted`;
   }
 }
