@@ -26,8 +26,11 @@ export class CoffeesController {
   }
 
   @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.coffeesService.findOne(id);
+  findOne(@Param("id") id: number) {
+    // ValidationPipe.transform() 自动转换类型了。
+    console.log(typeof id);
+
+    return this.coffeesService.findOne(id.toString());
   }
 
   @Post()
