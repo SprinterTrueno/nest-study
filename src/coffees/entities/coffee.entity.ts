@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn
+} from "typeorm";
+import { Flavor } from "./flavor.entity";
 
 @Entity()
 export class Coffee {
@@ -11,7 +18,7 @@ export class Coffee {
   @Column()
   brand: string;
 
-  // 将 flavors 字段设置为 JSON 类型，并允许为空。
-  @Column("json", { nullable: true })
+  @JoinTable()
+  @ManyToMany((type) => Flavor, (flavor) => flavor.coffees)
   flavors: string[];
 }
