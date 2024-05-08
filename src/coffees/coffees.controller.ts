@@ -10,19 +10,18 @@ import {
   Post,
   Query
 } from "@nestjs/common";
+import { PaginationQueryDto } from "@/common/dto/pagination-query.dto";
 import { CoffeesService } from "./coffees.service";
-import { CreateCoffeeDto } from "./dto/createCoffee.dto";
-import { UpdateCoffeeDto } from "./dto/updateCoffee.dto";
+import { CreateCoffeeDto } from "./dto/create-coffee.dto";
+import { UpdateCoffeeDto } from "./dto/update-coffee.dto";
 
 @Controller("coffees")
 export class CoffeesController {
   constructor(private readonly coffeesService: CoffeesService) {}
-  @Get()
-  findAll(@Query() paginationQuery: { limit: number; offset: number }) {
-    const { limit, offset } = paginationQuery;
-    console.log(limit, offset);
 
-    return this.coffeesService.findAll();
+  @Get()
+  findAll(@Query() paginationQuery: PaginationQueryDto) {
+    return this.coffeesService.findAll(paginationQuery);
   }
 
   @Get(":id")
