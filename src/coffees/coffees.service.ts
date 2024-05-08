@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 import { PaginationQueryDto } from "@/common/dto/pagination-query.dto";
+import { Event } from "@/events/entities/event.entity";
 import { CreateCoffeeDto } from "./dto/create-coffee.dto";
 import { UpdateCoffeeDto } from "./dto/update-coffee.dto";
 import { Coffee } from "./entities/coffee.entity";
@@ -10,6 +11,7 @@ import { Flavor } from "./entities/flavor.entity";
 @Injectable()
 export class CoffeesService {
   constructor(
+    private readonly dataSource: DataSource,
     @InjectRepository(Coffee)
     private readonly coffeeRepository: Repository<Coffee>,
     @InjectRepository(Flavor)
@@ -76,6 +78,31 @@ export class CoffeesService {
     const coffee = await this.findOne(id);
 
     return this.coffeeRepository.remove(coffee);
+  }
+
+  async recommendCoffee(coffee: Coffee) {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      coffee.recommendations++;
+
+      const recommendEvent = new Event();
+      recommendEvent.name = "recommend-coffee";
+      recommendEvent.type = "coffee";
+      recommendEvent.payload = { coffeeId: coffee.id };
+
+      await queryRunner.manager.save(recommendEvent);
+      await queryRunner.manager.save(coffee);
+
+      await queryRunner.commitTransaction();
+    } catch (e) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   private async preloadFlavorByName(name: string): Promise<Flavor> {
