@@ -19,7 +19,7 @@ export class CoffeesService {
     @InjectRepository(Flavor)
     private readonly flavorRepository: Repository<Flavor>
   ) {
-    const database = configService.get("DATABASE_HOST", "localhost");
+    const database = configService.get("database.host", "localhost");
     console.log(database);
   }
 
