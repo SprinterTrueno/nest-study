@@ -12,6 +12,7 @@ import {
 } from "@nestjs/common";
 import { PaginationQueryDto } from "@/common/dto/pagination-query.dto";
 import { Public } from "@/common/decorators/public.decorators";
+import { ParseIntPipe } from "@/common/pipes/parse-int.pipe";
 import { CoffeesService } from "./coffees.service";
 import { CreateCoffeeDto } from "./dto/create-coffee.dto";
 import { UpdateCoffeeDto } from "./dto/update-coffee.dto";
@@ -28,7 +29,7 @@ export class CoffeesController {
   }
 
   @Get(":id")
-  findOne(@Param("id") id: number) {
+  findOne(@Param("id", ParseIntPipe) id: number) {
     // ValidationPipe.transform() 自动转换类型了。
     console.log(typeof id);
 
